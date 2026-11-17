@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NúcleoVivo Colombia | Mockup Simulador Educativo de Reactor Nuclear</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        nuclear: {
+                            950: '#040B16',
+                            900: '#0A1628',
+                            800: '#112240',
+                            700: '#1D3557',
+                            cyan: '#00E5FF',
+                            cherenkov: '#38BDF8',
+                            emerald: '#10B981',
+                            amber: '#F59E0B',
+                            slate: '#94A3B8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Contenedor principal adaptado a formato web estándar responsivo */
+        body {
+            background-color: #040B16;
+            color: #F8FAFC;
+            min-height: 100vh;
+        }
+        .cherenkov-glow {
+            box-shadow: 0 0 45px rgba(0, 229, 255, 0.28), inset 0 0 30px rgba(56, 189, 248, 0.35);
+        }
+        .core-rod-glow {
+            background: linear-gradient(180deg, #38BDF8 0%, #0284C7 50%, #0369A1 100%);
+            box-shadow: 0 0 18px rgba(56, 189, 248, 0.85);
+        }
+        .blueprint-grid {
+            background-size: 32px 32px;
+            background-image: 
+                linear-gradient(to right, rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+        }
+        /* Estilo customizado estático para sliders de UI */
+        input[type=range].mockup-slider {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range].mockup-slider::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 999px;
+            background: #1E293B;
+            border: 1px solid #334155;
+        }
+        input[type=range].mockup-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #00E5FF;
+            border: 3px solid #0A1628;
+            margin-top: -7px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+        }
+    </style>
+</head>
+<body class="blueprint-grid min-h-screen flex flex-col selection:bg-cyan-400 selection:text-slate-950">
+
+    <!-- ENCABEZADO Y NAVEGACIÓN POR PANTALLAS (Inicio, Aprender, Simular) -->
+    <header class="sticky top-0 z-50 bg-nuclear-900/90 backdrop-blur-md border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Identidad del Proyecto -->
+            <button type="button" onclick="navigateToScreen('inicio')" class="flex items-center gap-4 group text-left">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition">
+                    <svg class="w-7 h-7 text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="2.5" fill="currentColor"/>
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"/>
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"/>
+                        <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(90 12 12)"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="font-bold text-xl tracking-tight text-white block leading-none">Núcleo<span class="text-cyan-400">Vivo</span></span>
+                    <span class="text-xs font-mono text-slate-400 tracking-wider uppercase">Pedagogía Nuclear Colombia</span>
+                </div>
+            </button>
+
+            <!-- Navegación Principal entre las 3 Pantallas -->
+            <nav class="flex items-center gap-2 sm:gap-3 bg-nuclear-950/70 p-2 rounded-2xl border border-slate-800">
+                <button type="button" id="nav-btn-inicio" onclick="navigateToScreen('inicio')" class="nav-pill px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-semibold text-white bg-cyan-500/15 border border-cyan-400/40 transition">
+                    1. Inicio
+                </button>
+                <button type="button" id="nav-btn-aprender" onclick="navigateToScreen('aprender')" class="nav-pill px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition">
+                    2. Aprender
+                </button>
+                <button type="button" id="nav-btn-simular" onclick="navigateToScreen('simular')" class="nav-pill px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800/70 transition flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    3. Simular
+                </button>
+            </nav>
+
+            <!-- Botón CTA Rápido de Flujo -->
+            <button type="button" onclick="navigateToScreen('simular')" class="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm uppercase tracking-wider shadow-lg shadow-cyan-400/20 transition">
+                Ir a Simular
+                <span>→</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow flex flex-col justify-center">
+
+        <!-- =====================================================================
+             PANTALLA 01: INICIO & PROPUESTA DE VALOR PARA INSTITUCIONES EDUCATIVAS
+             ===================================================================== -->
+        <section id="screen-inicio" class="screen-view relative py-16 lg:py-24 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+                    
+                    <!-- Columna Izquierda: Contexto Colombia 2026 & Propuesta -->
+                    <div class="lg:col-span-7 space-y-8">
+                        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-cyan-500/10 border border-cyan-400/30 text-cyan-300 text-sm font-mono">
+                            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                            CONTEXTO COLOMBIA • LEY NUCLEAR 2026 & ACUERDO OIEA
+                        </div>
+
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white tracking-tight leading-tight">
+                            La energía del futuro, explicada con <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-400">ciencia y cero mitos.</span>
+                        </h1>
+
+                        <p class="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed">
+                            Colombia avanza hacia la diversificación energética para superar la vulnerabilidad climática (como el fenómeno de El Niño). Sin embargo, el miedo heredado y la desinformación frenan la confianza ciudadana y el interés de los jóvenes por las ciencias exactas.
+                        </p>
+
+                        <!-- Bloque 6: Cliente y Propuesta (Instituciones Educativas y Entornos de Aprendizaje) -->
+                        <div class="p-6 rounded-2xl bg-nuclear-800/70 border border-cyan-500/25 space-y-3">
+                            <div class="flex items-center gap-2.5 text-cyan-300 font-semibold text-base uppercase tracking-wider">
+                                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+                                Diseñado para Instituciones Educativas y Entornos de Aprendizaje
+                            </div>
+                            <p class="text-sm sm:text-base text-slate-300 leading-relaxed">
+                                <strong class="text-white">¿Qué problema resuelve?</strong> Elimina el aislamiento pedagógico y la falta de herramientas didácticas en colegios y universidades. Permite a <strong class="text-cyan-200">docentes de ciencias y estudiantes</strong> visualizar de forma tangible y segura cómo opera un reactor moderno, fomentando vocaciones <strong class="text-emerald-300">STEAM</strong>.
+                            </p>
+                        </div>
+
+                        <!-- Botones de Recorrido Prototipado -->
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-6 pt-4">
+                            <button type="button" onclick="navigateToScreen('aprender')" class="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm sm:text-base flex items-center gap-3 transition shadow-xl shadow-cyan-500/25">
+                                <span>Ir a Pantalla 2: "Aprender"</span>
+                                <span>→</span>
+                            </button>
+                            <button type="button" onclick="navigateToScreen('simular')" class="px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl bg-nuclear-800 hover:bg-nuclear-700 text-white border border-slate-600 font-semibold text-sm sm:text-base flex items-center gap-3 transition">
+                                <span>Ir a Pantalla 3: "Simular"</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Mapa de Arquitectura del Mockup -->
+                    <div class="lg:col-span-5">
+                        <div class="rounded-3xl bg-nuclear-900 border border-slate-700/80 p-6 sm:p-8 shadow-2xl space-y-6">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                                <span class="font-mono text-sm text-cyan-400 uppercase font-semibold">Navegación de Pantallas</span>
+                                <span class="text-xs text-slate-400 font-mono">Web Responsiva</span>
+                            </div>
+
+                            <button type="button" onclick="navigateToScreen('inicio')" class="w-full text-left block p-5 rounded-2xl bg-nuclear-950/90 border border-cyan-500/40 hover:border-cyan-400 transition">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="font-mono text-xs text-cyan-400 font-bold">PANTALLA 01 • INICIO</span>
+                                    <span class="text-xs px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-200">Activa</span>
+                                </div>
+                                <p class="text-base font-semibold text-white">Contextualización y Propuesta Educativa</p>
+                                <p class="text-sm text-slate-400 mt-1">Explica el propósito pedagógico para colegios, universidades y docentes.</p>
+                            </button>
+
+                            <button type="button" onclick="navigateToScreen('aprender')" class="w-full text-left block p-5 rounded-2xl bg-nuclear-950/90 border border-slate-800 hover:border-cyan-400 transition">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="font-mono text-xs text-emerald-400 font-bold">PANTALLA 02 • MÓDULO APRENDER</span>
+                                    <span class="text-xs text-slate-400">Abrir pantalla →</span>
+                                </div>
+                                <p class="text-base font-semibold text-white">Desmitificación, Fisión y Seguridad Nuclear</p>
+                                <p class="text-sm text-slate-400 mt-1">Pestañas interactivas de lectura clara para combatir sesgos de riesgo.</p>
+                            </button>
+
+                            <button type="button" onclick="navigateToScreen('simular')" class="w-full text-left block p-5 rounded-2xl bg-nuclear-950/90 border border-slate-800 hover:border-cyan-400 transition">
+                                <div class="flex justify-between items-center mb-1.5">
+                                    <span class="font-mono text-xs text-amber-400 font-bold">PANTALLA 03 • MÓDULO SIMULAR</span>
+                                    <span class="text-xs text-slate-400">Abrir pantalla →</span>
+                                </div>
+                                <p class="text-base font-semibold text-white">Tablero de Control + Render 3D Estático del Núcleo</p>
+                                <p class="text-sm text-slate-400 mt-1">Simulación visual de controles de potencia, flujo de agua y estados.</p>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             PANTALLA 02: MÓDULO "APRENDER"
+             ===================================================================== -->
+        <section id="screen-aprender" class="screen-view hidden py-16 lg:py-24 bg-nuclear-900/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+                
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                    <span class="font-mono text-xs sm:text-sm text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-4 py-1.5 rounded-md">FRAME 02 / 03 • PANTALLA APRENDER</span>
+                    <button type="button" onclick="navigateToScreen('inicio')" class="font-mono text-xs sm:text-sm text-slate-400 hover:text-white transition">← Volver a Inicio</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-800 pb-8">
+                    <div>
+                        <span class="font-mono text-sm text-emerald-400 uppercase tracking-widest font-bold">Módulo 01 • Base Conceptual</span>
+                        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-2">Aprender: Ciencia sin Mitos</h2>
+                        <p class="text-slate-400 text-base lg:text-lg mt-3 max-w-3xl">
+                            Disposición pedagógica diseñada con docentes de ciencias para explicar los procesos físicos, protocolos de defensa en profundidad y aplicaciones reales en la vida cotidiana.
+                        </p>
+                    </div>
+                    <button type="button" onclick="navigateToScreen('simular')" class="px-6 py-3.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold text-sm transition shrink-0">
+                        Continuar a Pantalla 3: Simular →
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <button type="button" onclick="switchLearnTab('fision', this)" class="learn-tab p-5 sm:p-6 rounded-2xl bg-cyan-500/15 border-2 border-cyan-400 text-left transition shadow-lg">
+                        <span class="font-mono text-xs text-cyan-300 font-bold block mb-2">01 / TEMA</span>
+                        <span class="font-bold text-white text-sm sm:text-lg">Fisión Nuclear</span>
+                    </button>
+                    <button type="button" onclick="switchLearnTab('seguridad', this)" class="learn-tab p-5 sm:p-6 rounded-2xl bg-nuclear-950 border border-slate-800 text-left transition hover:border-slate-700">
+                        <span class="font-mono text-xs text-slate-400 font-bold block mb-2">02 / TEMA</span>
+                        <span class="font-bold text-white text-sm sm:text-lg">Barras y Seguridad</span>
+                    </button>
+                    <button type="button" onclick="switchLearnTab('mitos', this)" class="learn-tab p-5 sm:p-6 rounded-2xl bg-nuclear-950 border border-slate-800 text-left transition hover:border-slate-700">
+                        <span class="font-mono text-xs text-slate-400 font-bold block mb-2">03 / TEMA</span>
+                        <span class="font-bold text-white text-sm sm:text-lg">Mitos vs. Realidad</span>
+                    </button>
+                    <button type="button" onclick="switchLearnTab('aplicaciones', this)" class="learn-tab p-5 sm:p-6 rounded-2xl bg-nuclear-950 border border-slate-800 text-left transition hover:border-slate-700">
+                        <span class="font-mono text-xs text-slate-400 font-bold block mb-2">04 / TEMA</span>
+                        <span class="font-bold text-white text-sm sm:text-lg">Medicina y Ciencia</span>
+                    </button>
+                </div>
+
+                <div class="rounded-3xl bg-nuclear-950 border border-slate-800 p-6 sm:p-10 lg:p-12 shadow-2xl">
+                    
+                    <div id="learn-content-fision" class="learn-panel grid lg:grid-cols-12 gap-10 items-center">
+                        <div class="lg:col-span-6 space-y-6">
+                            <span class="inline-block px-3.5 py-1.5 rounded-md bg-cyan-500/10 text-cyan-300 font-mono text-xs">PROCESO TÉRMICO CONTROLADO</span>
+                            <h3 class="text-2xl sm:text-3xl font-bold text-white">Del átomo a la electricidad limpia: 4 pasos simples</h3>
+                            <p class="text-slate-300 text-base leading-relaxed">
+                                A diferencia de las centrales térmicas que queman carbón o gas emitiendo CO₂, un reactor nuclear genera calor mediante la <strong class="text-cyan-300">fisión controlada</strong> de átomos de Uranio-235.
+                            </p>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4 p-4 rounded-xl bg-nuclear-900 border border-slate-800">
+                                    <span class="w-8 h-8 rounded-lg bg-cyan-400 text-slate-950 font-mono font-bold text-sm flex items-center justify-center shrink-0">1</span>
+                                    <div>
+                                        <h4 class="font-bold text-white text-base">Fisión en el Núcleo</h4>
+                                        <p class="text-sm text-slate-400 mt-0.5">Un neutrón divide el núcleo del átomo, liberando energía en forma de calor intenso y constante.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 p-4 rounded-xl bg-nuclear-900 border border-slate-800">
+                                    <span class="w-8 h-8 rounded-lg bg-cyan-400 text-slate-950 font-mono font-bold text-sm flex items-center justify-center shrink-0">2</span>
+                                    <div>
+                                        <h4 class="font-bold text-white text-base">Circuito Refrigerante (Agua)</h4>
+                                        <p class="text-sm text-slate-400 mt-0.5">El agua a presión absorbe ese calor y lo transporta hacia un generador de vapor sin mezclarse con el exterior.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4 p-4 rounded-xl bg-nuclear-900 border border-slate-800">
+                                    <span class="w-8 h-8 rounded-lg bg-cyan-400 text-slate-950 font-mono font-bold text-sm flex items-center justify-center shrink-0">3</span>
+                                    <div>
+                                        <h4 class="font-bold text-white text-base">Turbina y Generador Eléctrico</h4>
+                                        <p class="text-sm text-slate-400 mt-0.5">El vapor mueve las aspas de una turbina conectada a un generador que produce electricidad libre de carbono.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-6">
+                            <div class="rounded-3xl bg-nuclear-900 border border-slate-700 p-6 sm:p-8 space-y-6">
+                                <div class="flex justify-between items-center text-xs font-mono text-slate-400">
+                                    <span>DIAGRAMA ESQUEMÁTICO • REACTOR PWR</span>
+                                    <span class="text-emerald-400">0% Emisiones CO₂</span>
+                                </div>
+                                <svg viewBox="0 0 500 280" class="w-full h-auto rounded-2xl bg-nuclear-950 p-6 border border-slate-800">
+                                    <path d="M40 240 V100 C40 45, 160 45, 160 100 V240 Z" fill="#0F172A" stroke="#38BDF8" stroke-width="2.5"/>
+                                    <text x="100" y="75" fill="#94A3B8" font-size="10" font-family="monospace" text-anchor="middle">CONTENCIÓN</text>
+                                    <rect x="68" y="115" width="64" height="95" rx="14" fill="#1E293B" stroke="#00E5FF" stroke-width="2"/>
+                                    <line x1="84" y1="130" x2="84" y2="195" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+                                    <line x1="100" y1="130" x2="100" y2="195" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+                                    <line x1="116" y1="130" x2="116" y2="195" stroke="#38BDF8" stroke-width="4" stroke-linecap="round"/>
+                                    <text x="100" y="226" fill="#38BDF8" font-size="9" font-family="monospace" text-anchor="middle">NÚCLEO</text>
+                                    
+                                    <path d="M132 135 H255 V115" fill="none" stroke="#F59E0B" stroke-width="4"/>
+                                    <text x="195" y="126" fill="#FBBF24" font-size="9" font-family="monospace" text-anchor="middle">VAPOR</text>
+
+                                    <polygon points="235,90 285,75 285,135 235,120" fill="#1D3557" stroke="#38BDF8" stroke-width="2"/>
+                                    <text x="260" y="150" fill="#E2E8F0" font-size="9" font-family="monospace" text-anchor="middle">TURBINA</text>
+
+                                    <line x1="285" y1="105" x2="320" y2="105" stroke="#94A3B8" stroke-width="4"/>
+                                    <rect x="320" y="82" width="60" height="46" rx="8" fill="#065F46" stroke="#10B981" stroke-width="2"/>
+                                    <text x="350" y="109" fill="#ECFDF5" font-size="10" font-family="monospace" text-anchor="middle">GEN ⚡</text>
+
+                                    <path d="M430 165 L445 85 L460 165 M425 110 H465 M430 135 H460" stroke="#10B981" stroke-width="2" fill="none"/>
+                                    <line x1="380" y1="105" x2="442" y2="105" stroke="#10B981" stroke-width="2" stroke-dasharray="4 3"/>
+                                    <text x="445" y="182" fill="#34D399" font-size="9" font-family="monospace" text-anchor="middle">HOGARES</text>
+
+                                    <rect x="230" y="180" width="65" height="35" rx="6" fill="#0C4A6E" stroke="#38BDF8" stroke-width="1.5"/>
+                                    <text x="262" y="201" fill="#BAE6FD" font-size="8" font-family="monospace" text-anchor="middle">CONDENSADOR</text>
+                                    <path d="M260 135 V180" stroke="#38BDF8" stroke-width="2.5" stroke-dasharray="3 3"/>
+                                    <path d="M230 198 H132" fill="none" stroke="#38BDF8" stroke-width="4"/>
+                                    <text x="185" y="212" fill="#38BDF8" font-size="9" font-family="monospace" text-anchor="middle">AGUA FRÍA</text>
+                                </svg>
+                                <div class="flex items-center justify-between pt-2">
+                                    <span class="text-sm text-slate-400">¿Listo para manipular estos parámetros?</span>
+                                    <button type="button" onclick="navigateToScreen('simular')" class="text-sm font-bold text-cyan-400 hover:underline">Probar en el Simulador →</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="learn-content-seguridad" class="learn-panel hidden grid lg:grid-cols-3 gap-8">
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-mono font-bold text-lg">01</div>
+                            <h4 class="text-xl font-bold text-white">Barras de Control Automáticas</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">
+                                Fabricadas con materiales que absorben neutrones (como boro o cadmio). Si se insertan en el núcleo, frenan la reacción en cadena en cuestión de segundos. Ante cualquier anomalía, caen por gravedad automáticamente.
+                            </p>
+                        </div>
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-4">
+                            <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg">02</div>
+                            <h4 class="text-xl font-bold text-white">Edificio de Contención Blindado</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">
+                                El reactor está encerrado dentro de una cúpula de hormigón armado y acero de más de 1.2 metros de espesor, diseñada para resistir terremotos, impactos externos y mantener cualquier radiación aislada del ambiente.
+                            </p>
+                        </div>
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 flex items-center justify-center font-mono font-bold text-lg">03</div>
+                            <h4 class="text-xl font-bold text-white">Regulación Internacional (OIEA)</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">
+                                Con la Ley Nuclear de 2026 y el respaldo del Organismo Internacional de Energía Atómica, toda operación exige auditorías permanentes, redundancia en sistemas de enfriamiento y personal altamente certificado.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="learn-content-mitos" class="learn-panel hidden grid md:grid-cols-2 gap-8">
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-rose-500/25 space-y-4">
+                            <span class="px-3 py-1.5 rounded bg-rose-500/15 text-rose-300 font-mono text-xs font-bold">MITO FRECUENTE</span>
+                            <h4 class="text-xl font-bold text-white">"Un reactor nuclear puede explotar como una bomba atómica"</h4>
+                            <div class="h-px bg-slate-800"></div>
+                            <span class="px-3 py-1.5 rounded bg-emerald-500/15 text-emerald-300 font-mono text-xs font-bold">REALIDAD CIENTÍFICA</span>
+                            <p class="text-base text-slate-300 leading-relaxed">
+                                Es físicamente imposible. El combustible de un reactor comercial tiene un enriquecimiento de Uranio-235 del 3% al 5%, mientras que un arma requiere más del 90%. Además, el diseño físico del núcleo impide una detonación nuclear.
+                            </p>
+                        </div>
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-rose-500/25 space-y-4">
+                            <span class="px-3 py-1.5 rounded bg-rose-500/15 text-rose-300 font-mono text-xs font-bold">MITO FRECUENTE</span>
+                            <h4 class="text-xl font-bold text-white">"El humo blanco de las torres es radiación contaminante"</h4>
+                            <div class="h-px bg-slate-800"></div>
+                            <span class="px-3 py-1.5 rounded bg-emerald-500/15 text-emerald-300 font-mono text-xs font-bold">REALIDAD CIENTÍFICA</span>
+                            <p class="text-base text-slate-300 leading-relaxed">
+                                Lo que sale de las torres de enfriamiento es simplemente <strong class="text-white">vapor de agua limpia</strong>. El agua que enfría el condensador nunca entra en contacto con el combustible radiactivo del núcleo.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div id="learn-content-aplicaciones" class="learn-panel hidden grid md:grid-cols-3 gap-8">
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-3">
+                            <span class="text-3xl">🏥</span>
+                            <h4 class="text-xl font-bold text-white">Medicina Nuclear</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">Producción de radioisótopos esenciales para diagnosticar y tratar el cáncer (radioterapia y tomografías PET) salvando miles de vidas al año.</p>
+                        </div>
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-3">
+                            <span class="text-3xl">⚡</span>
+                            <h4 class="text-xl font-bold text-white">Respaldo Energético Limpio</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">Genera electricidad continua 24/7 sin depender de lluvias ni sequías, complementando las hidroeléctricas colombianas.</p>
+                        </div>
+                        <div class="p-8 rounded-3xl bg-nuclear-900 border border-slate-800 space-y-3">
+                            <span class="text-3xl">🔬</span>
+                            <h4 class="text-xl font-bold text-white">Investigación e Industria</h4>
+                            <p class="text-base text-slate-300 leading-relaxed">Esterilización de insumos médicos, mejora de cultivos agrícolas resistentes y formación de científicos e ingenieros en Colombia.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- =====================================================================
+             PANTALLA 03: PANEL DE CONTROL DEL MÓDULO "SIMULAR"
+             ===================================================================== -->
+        <section id="screen-simular" class="screen-view hidden py-16 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+                
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                    <span class="font-mono text-xs sm:text-sm text-amber-300 bg-amber-500/10 border border-amber-500/30 px-4 py-1.5 rounded-md">FRAME 03 / 03 • PANTALLA SIMULAR (PANEL DE CONTROL)</span>
+                    <button type="button" onclick="navigateToScreen('aprender')" class="font-mono text-xs sm:text-sm text-slate-400 hover:text-white transition">← Volver a Aprender</button>
+                </div>
+
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-800 pb-8">
+                    <div>
+                        <span class="font-mono text-sm text-cyan-400 uppercase tracking-widest font-bold">Módulo 02 • Interfaz Principal del Simulador</span>
+                        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-2">Simular: Tablero de Control del Reactor</h2>
+                        <p class="text-slate-400 text-base lg:text-lg mt-3 max-w-3xl">
+                            Prototipo visual de alta fidelidad que valida la disposición intuitiva de los controles de potencia, flujo refrigerante y el render 3D estático del núcleo.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-3 bg-nuclear-900 p-3 rounded-2xl border border-slate-700">
+                        <span class="text-sm font-mono text-slate-400 px-2">Estados Mockup:</span>
+                        <button onclick="setMockupPreset('optimo')" id="preset-optimo" class="preset-btn px-4 py-2 rounded-xl text-sm font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 transition">
+                            Operación Nominal
+                        </button>
+                        <button onclick="setMockupPreset('alta')" id="preset-alta" class="preset-btn px-4 py-2 rounded-xl text-sm font-mono font-semibold text-slate-300 hover:bg-slate-800 transition">
+                            Alta Demanda
+                        </button>
+                        <button onclick="setMockupPreset('scram')" id="preset-scram" class="preset-btn px-4 py-2 rounded-xl text-sm font-mono font-semibold text-slate-300 hover:bg-slate-800 transition">
+                            Parada Segura (SCRAM)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-12 gap-8 items-stretch">
+                    
+                    <div class="lg:col-span-7 rounded-3xl bg-nuclear-900 border border-slate-700/90 p-6 sm:p-8 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+                        
+                        <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-slate-800 z-10">
+                            <div class="flex items-center gap-3">
+                                <span id="status-dot" class="w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50"></span>
+                                <span id="status-label" class="font-mono text-xs sm:text-base font-bold text-emerald-300 uppercase">ESTADO: ESTABLE Y SEGURO</span>
+                            </div>
+                            <span class="font-mono text-[10px] sm:text-xs text-slate-400 bg-nuclear-950 px-3 py-1.5 rounded-lg border border-slate-800">
+                                VISTA: RENDER 3D ESTÁTICO • NÚCLEO PWR
+                            </span>
+                        </div>
+
+                        <div class="my-6 sm:my-8 relative rounded-2xl bg-nuclear-950 border border-cyan-500/25 p-6 sm:p-8 flex flex-col items-center justify-center min-h-[360px] cherenkov-glow">
+                            
+                            <div class="w-full flex justify-between text-[11px] font-mono text-cyan-300/90 mb-4">
+                                <span class="bg-nuclear-900/90 px-3 py-1 rounded border border-cyan-500/30">● Barras de Control (Boro)</span>
+                                <span class="bg-nuclear-900/90 px-3 py-1 rounded border border-cyan-500/30">● Piscina de Agua Desmineralizada</span>
+                            </div>
+
+                            <svg viewBox="0 0 420 260" class="w-full max-w-md h-auto drop-shadow-[0_0_30px_rgba(0,229,255,0.35)]">
+                                <defs>
+                                    <radialGradient id="cherenkovPool" cx="50%" cy="55%" r="50%">
+                                        <stop offset="0%" stop-color="#00E5FF" stop-opacity="0.55"/>
+                                        <stop offset="55%" stop-color="#0284C7" stop-opacity="0.25"/>
+                                        <stop offset="100%" stop-color="#040B16" stop-opacity="0"/>
+                                    </radialGradient>
+                                    <linearGradient id="vesselMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#1E293B"/>
+                                        <stop offset="50%" stop-color="#475569"/>
+                                        <stop offset="100%" stop-color="#1E293B"/>
+                                    </linearGradient>
+                                    <linearGradient id="fuelRodGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" stop-color="#E0F2FE"/>
+                                        <stop offset="40%" stop-color="#00E5FF"/>
+                                        <stop offset="100%" stop-color="#0369A1"/>
+                                    </linearGradient>
+                                </defs>
+
+                                <ellipse cx="210" cy="145" rx="175" ry="95" fill="url(#cherenkovPool)"/>
+
+                                <ellipse cx="210" cy="68" rx="115" ry="34" fill="#0F172A" stroke="#64748B" stroke-width="3"/>
+                                <ellipse cx="210" cy="68" rx="98" ry="26" fill="#082F49" stroke="#38BDF8" stroke-width="1.5"/>
+
+                                <path d="M95 68 V185 C95 212, 325 212, 325 185 V68" fill="rgba(14, 116, 144, 0.14)" stroke="url(#vesselMetal)" stroke-width="3"/>
+                                <ellipse cx="210" cy="185" rx="115" ry="32" fill="#0C4A6E" fill-opacity="0.45" stroke="#38BDF8" stroke-width="2"/>
+
+                                <g id="svg-fuel-rods">
+                                    <rect x="155" y="95" width="12" height="88" rx="4" fill="url(#fuelRodGrad)"/>
+                                    <rect x="175" y="90" width="12" height="96" rx="4" fill="url(#fuelRodGrad)"/>
+                                    <rect x="195" y="88" width="12" height="100" rx="4" fill="url(#fuelRodGrad)"/>
+                                    <rect x="215" y="88" width="12" height="100" rx="4" fill="url(#fuelRodGrad)"/>
+                                    <rect x="235" y="90" width="12" height="96" rx="4" fill="url(#fuelRodGrad)"/>
+                                    <rect x="255" y="95" width="12" height="88" rx="4" fill="url(#fuelRodGrad)"/>
+                                </g>
+
+                                <g id="svg-control-rods" transform="translate(0, -18)">
+                                    <rect x="167" y="32" width="5" height="72" rx="2" fill="#CBD5E1" stroke="#0F172A" stroke-width="1"/>
+                                    <rect x="187" y="28" width="5" height="72" rx="2" fill="#CBD5E1" stroke="#0F172A" stroke-width="1"/>
+                                    <rect x="207" y="26" width="5" height="72" rx="2" fill="#F59E0B" stroke="#0F172A" stroke-width="1"/>
+                                    <rect x="227" y="28" width="5" height="72" rx="2" fill="#CBD5E1" stroke="#0F172A" stroke-width="1"/>
+                                    <rect x="247" y="32" width="5" height="72" rx="2" fill="#CBD5E1" stroke="#0F172A" stroke-width="1"/>
+                                </g>
+
+                                <path d="M40 120 H95" stroke="#38BDF8" stroke-width="10" stroke-linecap="round"/>
+                                <path d="M325 120 H380" stroke="#F59E0B" stroke-width="10" stroke-linecap="round"/>
+                                <text x="42" y="106" fill="#38BDF8" font-size="9" font-family="monospace">ENTRADA AGUA</text>
+                                <text x="318" y="106" fill="#FBBF24" font-size="9" font-family="monospace">SALIDA VAPOR</text>
+                            </svg>
+
+                            <div class="w-full mt-4 p-4 rounded-xl bg-nuclear-900/95 border border-slate-800 text-xs sm:text-sm text-slate-300 flex items-start gap-3">
+                                <span class="text-cyan-400 font-bold text-base">ℹ</span>
+                                <p id="core-pedagogical-caption">
+                                    <strong class="text-cyan-300">Efecto Cherenkov:</strong> El característico resplandor azul ocurre cuando partículas cargadas viajan en el agua refrigerante más rápido que la luz en ese medio. Es señal de operación sumergida y blindada.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3 sm:gap-4">
+                            <div class="p-3 sm:p-4 rounded-2xl bg-nuclear-950 border border-slate-800">
+                                <span class="text-[10px] sm:text-xs font-mono text-slate-400 block">ENERGÍA GENERADA</span>
+                                <span id="metric-mw" class="font-mono text-lg sm:text-2xl font-bold text-cyan-400">750 MW</span>
+                            </div>
+                            <div class="p-3 sm:p-4 rounded-2xl bg-nuclear-950 border border-slate-800">
+                                <span class="text-[10px] sm:text-xs font-mono text-slate-400 block">TEMP. NÚCLEO</span>
+                                <span id="metric-temp" class="font-mono text-lg sm:text-2xl font-bold text-emerald-400">315 °C</span>
+                            </div>
+                            <div class="p-3 sm:p-4 rounded-2xl bg-nuclear-950 border border-slate-800">
+                                <span class="text-[10px] sm:text-xs font-mono text-slate-400 block">HOGARES ABASTECIDOS</span>
+                                <span id="metric-homes" class="font-mono text-lg sm:text-2xl font-bold text-white">~520.000</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-5 rounded-3xl bg-nuclear-900 border border-slate-700/90 p-6 sm:p-8 flex flex-col justify-between shadow-2xl space-y-8">
+                        <div class="space-y-6">
+                            <div class="border-b border-slate-800 pb-4">
+                                <span class="font-mono text-xs text-amber-400 uppercase font-bold">Panel de Operación Educativa</span>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mt-1">Controles del Reactor</h3>
+                                <p class="text-xs sm:text-sm text-slate-400 mt-1">Ajusta los deslizadores visuales para observar cómo responde la interfaz pedagógica.</p>
+                            </div>
+
+                            <div class="p-5 sm:p-6 rounded-2xl bg-nuclear-950 border border-slate-800 space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label for="power-slider" class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                                        <span class="text-amber-400">⚡</span> Potencia del Reactor
+                                    </label>
+                                    <span id="power-value-badge" class="font-mono text-sm sm:text-base font-bold px-3 py-1 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">75%</span>
+                                </div>
+                                <input id="power-slider" type="range" min="0" max="100" value="75" oninput="updateMockupControls()" class="mockup-slider w-full">
+                                <p class="text-xs sm:text-sm text-slate-400">Regula la extracción de las barras de control para aumentar o disminuir la tasa de fisión.</p>
+                            </div>
+
+                            <div class="p-5 sm:p-6 rounded-2xl bg-nuclear-950 border border-slate-800 space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label for="water-slider" class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                                        <span class="text-cyan-400">💧</span> Flujo de Agua Refrigerante
+                                    </label>
+                                    <span id="water-value-badge" class="font-mono text-sm sm:text-base font-bold px-3 py-1 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">60%</span>
+                                </div>
+                                <input id="water-slider" type="range" min="0" max="100" value="60" oninput="updateMockupControls()" class="mockup-slider w-full">
+                                <p class="text-xs sm:text-sm text-slate-400">Regula la velocidad de las bombas primarias para disipar el calor y mantener la estabilidad térmica del sistema.</p>
+                            </div>
+                        </div>
+
+                        <div id="simulator-feedback-box" class="p-5 sm:p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2">
+                            <span class="font-mono text-xs font-bold text-emerald-300 uppercase block">Análisis Pedagógico en Tiempo Real</span>
+                            <p id="simulator-feedback-text" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                                Equilibrio térmico óptimo. El flujo de agua refrigerante disipa correctamente el calor generado por el núcleo, abasteciendo energía limpia y continua.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-nuclear-950 border-t border-slate-800 py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <div>
+                <span class="font-bold text-white text-base">Núcleo<span class="text-cyan-400">Vivo</span> Colombia</span>
+                <p class="text-xs sm:text-sm text-slate-400 mt-1">Prototipo conceptual educativo para fomentar vocaciones STEAM y divulgación de la Ley Nuclear.</p>
+            </div>
+            <div class="text-xs text-slate-500 font-mono">
+                <span>Diseño Web Responsivo • 3 Pantallas Interactivas</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function navigateToScreen(screenId) {
+            const screens = document.querySelectorAll('.screen-view');
+            screens.forEach(sec => sec.classList.add('hidden'));
+
+            const targetScreen = document.getElementById(`screen-${screenId}`);
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+            }
+
+            document.querySelectorAll('.nav-pill').forEach(btn => {
+                btn.classList.remove('text-white', 'bg-cyan-500/15', 'border', 'border-cyan-400/40', 'font-semibold');
+                btn.classList.add('text-slate-300', 'font-medium');
+            });
+            const activeBtn = document.getElementById(`nav-btn-${screenId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-300', 'font-medium');
+                activeBtn.classList.add('text-white', 'bg-cyan-500/15', 'border', 'border-cyan-400/40', 'font-semibold');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function switchLearnTab(tabKey, buttonEl) {
+            document.querySelectorAll('.learn-tab').forEach(tab => {
+                tab.classList.remove('bg-cyan-500/15', 'border-2', 'border-cyan-400');
+                tab.classList.add('bg-nuclear-950', 'border', 'border-slate-800');
+                const firstSpan = tab.querySelector('span:first-child');
+                if (firstSpan) {
+                    firstSpan.classList.replace('text-cyan-300', 'text-slate-400');
+                }
+            });
+
+            buttonEl.classList.remove('bg-nuclear-950', 'border', 'border-slate-800');
+            buttonEl.classList.add('bg-cyan-500/15', 'border-2', 'border-cyan-400');
+            const activeSpan = buttonEl.querySelector('span:first-child');
+            if (activeSpan) {
+                activeSpan.classList.replace('text-slate-400', 'text-cyan-300');
+            }
+
+            document.querySelectorAll('.learn-panel').forEach(panel => panel.classList.add('hidden'));
+            const targetPanel = document.getElementById(`learn-content-${tabKey}`);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+            }
+        }
+
+        function setMockupPreset(preset) {
+            const powerSlider = document.getElementById('power-slider');
+            const waterSlider = document.getElementById('water-slider');
+
+            if (preset === 'optimo') {
+                if (powerSlider) powerSlider.value = 75;
+                if (waterSlider) waterSlider.value = 60;
+            } else if (preset === 'alta') {
+                if (powerSlider) powerSlider.value = 95;
+                if (waterSlider) waterSlider.value = 85;
+            } else if (preset === 'scram') {
+                if (powerSlider) powerSlider.value = 0;
+                if (waterSlider) waterSlider.value = 40;
+            }
+
+            updateMockupControls();
+        }
+
+        function updateMockupControls() {
+            const powerSlider = document.getElementById('power-slider');
+            const waterSlider = document.getElementById('water-slider');
+            if (!powerSlider || !waterSlider) return;
+
+            const power = parseInt(powerSlider.value, 10);
+            const water = parseInt(waterSlider.value, 10);
+
+            const powerBadge = document.getElementById('power-value-badge');
+            const waterBadge = document.getElementById('water-value-badge');
+            if (powerBadge) powerBadge.textContent = `${power}%`;
+            if (waterBadge) waterBadge.textContent = `${water}%`;
+
+            const mw = power * 10;
+            const temp = power === 0 ? 65 : Math.round(260 + (power * 0.9) - (water * 0.25));
+            const homes = Math.round(mw * 693).toLocaleString('es-CO');
+
+            const metricMw = document.getElementById('metric-mw');
+            const metricTemp = document.getElementById('metric-temp');
+            const metricHomes = document.getElementById('metric-homes');
+
+            if (metricMw) metricMw.textContent = `${mw} MW`;
+            if (metricTemp) metricTemp.textContent = `${temp} °C`;
+            if (metricHomes) metricHomes.textContent = power === 0 ? '0 (En espera)' : `~${homes}`;
+
+            const controlRodsGroup = document.getElementById('svg-control-rods');
+            if (controlRodsGroup) {
+                const rodOffset = Math.round((100 - power) * 0.45) - 18;
+                controlRodsGroup.setAttribute('transform', `translate(0, ${rodOffset})`);
+            }
+
+            const statusDot = document.getElementById('status-dot');
+            const statusLabel = document.getElementById('status-label');
+            const feedbackBox = document.getElementById('simulator-feedback-box');
+            const feedbackText = document.getElementById('simulator-feedback-text');
+
+            if (power === 0) {
+                if (statusDot) statusDot.className = 'w-3.5 h-3.5 rounded-full bg-cyan-400';
+                if (statusLabel) {
+                    statusLabel.className = 'font-mono text-xs sm:text-base font-bold text-cyan-300 uppercase';
+                    statusLabel.textContent = 'ESTADO: PARADA SEGURA (BARRAS INSERTADAS)';
+                }
+                if (feedbackBox) feedbackBox.className = 'p-5 sm:p-6 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 space-y-2';
+                if (feedbackText) feedbackText.textContent = 'Protocolo SCRAM activo: Las barras absorbentes de neutrones están completamente dentro del núcleo, deteniendo la fisión de forma inmediata y segura.';
+            } else if (power > water + 25) {
+                if (statusDot) statusDot.className = 'w-3.5 h-3.5 rounded-full bg-amber-400 animate-ping';
+                if (statusLabel) {
+                    statusLabel.className = 'font-mono text-xs sm:text-base font-bold text-amber-300 uppercase';
+                    statusLabel.textContent = 'AVISO PEDAGÓGICO: AUMENTAR FLUJO REFRIGERANTE';
+                }
+                if (feedbackBox) feedbackBox.className = 'p-5 sm:p-6 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-2';
+                if (feedbackText) feedbackText.textContent = 'La potencia térmica es alta respecto al flujo de agua. En un reactor real, los sistemas automáticos incrementan el bombeo de refrigerante para mantener la temperatura estable.';
+            } else {
+                if (statusDot) statusDot.className = 'w-3.5 h-3.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50';
+                if (statusLabel) {
+                    statusLabel.className = 'font-mono text-xs sm:text-base font-bold text-emerald-300 uppercase';
+                    statusLabel.textContent = 'ESTADO: ESTABLE Y SEGURO';
+                }
+                if (feedbackBox) feedbackBox.className = 'p-5 sm:p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2';
+                if (feedbackText) feedbackText.textContent = 'Equilibrio térmico óptimo. El flujo de agua refrigerante disipa correctamente el calor generado por el núcleo, abasteciendo energía limpia y continua.';
+            }
+        }
+    </script>
+</body>
+</html>
